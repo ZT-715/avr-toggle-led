@@ -8,7 +8,7 @@ uint8_t volatile button_toggled;
 
 int main(void)
 {
-	// Sets PORT B.5 as an output
+    // Sets PORT B.5 as an output
     DDRB |= (1 << PB5);
 
     // sets PB5 HIGH (pull up)
@@ -30,12 +30,12 @@ int main(void)
         {
             PORTB ^= (1 << PB5);
 
+            // debounce time
             _delay_ms(1500);
 
             button_toggled = 0;
         }
     }
-
 }
 
 // handle PCI0 interrupt
