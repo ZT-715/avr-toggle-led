@@ -7,7 +7,7 @@ Makes the 'L' led (port b5) on arduino nano bord toggle on and off with signal c
 
 ![Alt text](https://media.giphy.com/media/PBXShNnOKkAo4mBRw3/giphy.gif)
 
-On the board, the button (when pressed) connects +5V with D12 (witch is pulld down by a 3K ohm resistor) causing an abrupt signal change to trigger the interrupt.
+On the board, the button (when pressed) connects +5V with D12 (witch is pulled down by a 3K ohm resistor) causing an abrupt signal change to trigger the interrupt.
 
 
 ### Setup
@@ -24,7 +24,7 @@ Uses the ATMega328p running at 16Mhz and is programmed through arduino ISP:
 
 
 #### Cloning, Compiling and flashing
-Instructions below assume you have succesfully installed the [AVR toolchain](https://www.nongnu.org/avr-libc/user-manual/overview.html) and [CMake](http://www.cmake.org/):
+Instructions below assume you have successfully installed the [AVR toolchain](https://www.nongnu.org/avr-libc/user-manual/overview.html) and [CMake](http://www.cmake.org/):
 ```sh
 git clone 
 cd avr-toggle-led
