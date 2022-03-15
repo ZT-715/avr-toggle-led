@@ -3,16 +3,19 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
+#include <avr/sleep.h>
 
 uint8_t volatile button_toggled;
 
 int main(void)
 {
+    set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+
     // Sets PORT B.5 as an output
     DDRB |= (1 << PB5);
 
     // sets PB5 HIGH (pull up)
-    //PORTB |= (1 << PB5);
+    PORTB |= (1 << PB5);
 
     // sets PCICR to enable pin change interrupt 0
     PCICR |= (1 << PCIE0);
@@ -34,12 +37,14 @@ int main(void)
             _delay_ms(1500);
 
             button_toggled = 0;
+
         }
+       sleep_mode();
     }
 }
 
 // handle PCI0 interrupt
-ISR(PCINT0_vect, ISR_BLOCK)
+ISR(PCINT0_vect)
 {
     button_toggled = 1;
 }
