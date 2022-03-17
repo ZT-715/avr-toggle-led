@@ -5,7 +5,7 @@ avr-toggle-led
 
 Makes the 'L' led (port b5) on arduino nano bord toggle on and off with signal change on port b4 (D12 pin on arduino).
 
-![Alt text](https://media.giphy.com/media/KBlmR3WVKoy9XZIq1Q/giphy-downsized-large.gif)
+![Alt text](https://media.giphy.com/media/agZbFIbxs24hRY06JE/giphy-downsized-large.gif)
 
 On the board, the button (when pressed) grounds pin D12 (witch is internally pulled up) causing an abrupt signal change to trigger the interrupt.
 
