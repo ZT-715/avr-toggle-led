@@ -73,7 +73,7 @@ set(COPT      "-Os -lm -lprintf_flt")
 set(CMCU      "-mmcu=${MCU}")
 set(CDEFS     "-DF_CPU=${F_CPU} -DBAUD=${BAUD}")
 
-set(CFLAGS   "${CMCU} ${CDEBUG} ${COPT} ${CWARN} ${CSTANDARD} ${CTUNING}")
+set(CFLAGS   "${CMCU} ${CDEFS} ${CDEBUG} ${COPT} ${CWARN} ${CSTANDARD} ${CTUNING}")
 set(CXXFLAGS "${CMCU} ${CDEBUG} ${CDEFS} ${COPT} ${CTUNING}")
 
 set(CMAKE_C_FLAGS   "${CFLAGS}")
@@ -95,3 +95,6 @@ add_custom_target(flash ${AVRDUDE} -c ${PROG_TYPE} -P ${PORT} -b ${BAUD} -p ${MC
 # Debug setup
 add_custom_target(virtualavr ${SIMAVR} -f "${PROJECT_NAME}.elf" --gdbserver -p 4242 --device atmega328 DEPENDS blink)
 add_custom_target(debug ${AVRGDB} "${PROJECT_NAME}.elf" -ex 'target remote localhost:4242' DEPENDS virtualavr)
+
+# Serial console setup
+add_custom_target(serial cu -l ${PORT} -s ${BAUD})
