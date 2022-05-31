@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 
 set(PROG_TYPE arduino)
-set(PORT /dev/ttyUSB0)
+set(PORT /dev/ttyUSB1)
 
 
 # Variables regarding the AVR chip
@@ -98,3 +98,6 @@ add_custom_target(debug ${AVRGDB} "${PROJECT_NAME}.elf" -ex 'target remote local
 
 # Serial console setup
 add_custom_target(serial cu -l ${PORT} -s ${BAUD})
+
+# run preprocessor
+add_custom_target(preprocess "${AVRC} -E ${CFLAGS} ${SRC_FILES} ${LIB_SRC_FILES}")

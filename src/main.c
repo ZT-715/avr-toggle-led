@@ -10,6 +10,7 @@
 
 
 uint8_t volatile button_toggled;
+uint8_t volatile serial_connected;
 
 int main(void)
 {
@@ -18,6 +19,9 @@ int main(void)
     uart_init();
     stdout = &UART_O;
     stdin = &UART_I;
+
+    //enables receive complete interrupt
+    //UCSR0B |= (1<<RXCIE0);
 
 
     // Sets output ports
@@ -45,18 +49,20 @@ int main(void)
     {
         if (button_toggled)
         {
-            //toggles pin b 5
-            PORTB ^= (1 << PB5);
+            cli();
 
             //save state on eeprom
             eeprom_update_byte(0, ((PORTB >> PB5) & 0x1));
 
-            puts("test");
+            //toggles pin b 5
+            PORTB ^= (1 << PB5);
 
             // debounce time
             _delay_ms(1000);
 
             button_toggled = 0;
+
+            sei();
         }
        sleep_mode();
     }
@@ -68,3 +74,6 @@ ISR(PCINT0_vect)
     button_toggled = 1;
 }
 
+ISR(USART_RX_vect)
+{
+}
