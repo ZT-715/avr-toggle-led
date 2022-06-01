@@ -3,13 +3,13 @@ avr-toggle-led
 
 ### Overview
 
-Makes the 'L' led (port b5) on arduino nano bord toggle on and off with signal change on port b4 (D12 pin on arduino).
+Makes the 'L' led (port b5) on arduino nano bord toggle on and off with signal change on port b4 (D12 pin on arduino) or any serial input on USB, then shares current state ('on' or 'off') as serial output. 
 
 ![Alt text](https://media.giphy.com/media/agZbFIbxs24hRY06JE/giphy-downsized-large.gif)
 
 On the board, the button (when pressed) grounds pin D12 (witch is internally pulled up) causing an abrupt signal change to trigger the interrupt.
 
-The change in state of the led is then written to the eeprom, saving its state even after power offs and resets.
+Any change in state of the led is then written to the eeprom, saving its state even after power-offs and resets.
 
 
 ### Setup
@@ -34,4 +34,18 @@ mkdir build
 cd build
 cmake ..
 make flash
+```
+
+#### Console
+
+Uses 8 bit of data, 1 stop bit and no parity bit and may be used by any serial console program just by setting the arduino port and the baud rate, ex.:
+
+```shell
+screen screen /dev/ttyUSB0 57600
+```
+
+or 
+
+```shell
+cu -l /dev/ttyUSB0 -s 57600
 ```
