@@ -41,7 +41,7 @@ make flash
 Uses 8 bit of data, 1 stop bit and no parity bit and may be used by any serial console program just by setting the arduino port and the baud rate, ex.:
 
 ```shell
-screen screen /dev/ttyUSB0 57600
+screen /dev/ttyUSB0 57600
 ```
 
 or 
