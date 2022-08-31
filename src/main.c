@@ -15,30 +15,31 @@ void printstate(void);
 
 int main(void)
 {
+    volatile char serial_data;
+
     //set_sleep_mode(SLEEP_MODE_PWR_DOWN);
 
     uart_init();
     stdout = &UART_O;
     stdin = &UART_I;
 
-    // Sets output ports
-    DDRB = (1 << PB4)|(1 << PB5);
+    // Sets i/o ports
+    DDRB = (1 << DDB5);
+    DDRD = 0;
 
-    // sets pull up
-    PORTB = (1 << PB4);
+    // sets pull ups
+    PORTD = (1 << PD5);
 
     if(eeprom_read_byte(0))
     {
         PORTB |= (1 << PB5);
     }
 
-    // sets PCICR to enable pin change interrupt 0
-    PCICR = (1 << PCIE0);
+    // sets PCICR to enable pin change interrupt enable 2
+    PCICR = (1 << PCIE2);
 
-    // sets PCMSK0 register to enable PCINT4 as PCIE0 pin
-    PCMSK0 = (1 << PCINT4);
-
-    volatile char serial_data;
+    // sets PCMSK2 register to enable D5 (PCINT21) as PCIE2 pin
+    PCMSK2 = (1 << PCINT21);
 
     // turns on interrupts
     sei();
@@ -47,6 +48,8 @@ int main(void)
     {
         if (button_toggled)
         {
+            //cli();
+
             //toggles pin b 5
             PORTB ^= (1 << PB5);
 
@@ -55,15 +58,11 @@ int main(void)
 
             printstate();
 
-            // debounce time
-            _delay_ms(1000);
-
             button_toggled = 0;
         }
 
         //checks for serial receiver buffer
-        if(UCSR0A & (1<<RXC0))
-        {
+        if (UCSR0A & (1<<RXC0)) {
             serial_data = getc(stdin);
             putchar(serial_data);
             putchar('\n');
@@ -76,7 +75,7 @@ int main(void)
 
             printstate();
 
-            while ((UCSR0A & (1<<RXC0))) serial_data = UDR0;
+            while (UCSR0A & (1<<RXC0)) serial_data = UDR0;
             serial_data = 0;
         }
 
@@ -86,10 +85,10 @@ int main(void)
 
 void printstate(void)
 {
-    if((PORTB >> PB5) & 0x1){
+    if ((PORTB >> PB5) & 0x1) {
         puts("on\n\r");
     }
-    else{
+    else {
         puts("off\n\r");
     }
 }
@@ -97,7 +96,9 @@ void printstate(void)
 // handle PCI0 interrupt
 ISR(PCINT0_vect)
 {
-    button_toggled = 1;
+    if (!((PIND >> PIND5) & 0x1)){
+        button_toggled = 1;
+    }
 }
-//ISR(USART_RX_vect)
 
+//ISR(USART_RX_vect)
