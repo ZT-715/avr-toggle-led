@@ -25,7 +25,7 @@ int main(void)
 
     // Sets i/o ports
     DDRB = (1 << DDB5);
-    DDRD = 0;
+    DDRD = 0x0;
 
     // sets pull ups
     PORTD = (1 << PD5);
@@ -94,7 +94,7 @@ void printstate(void)
 }
 
 // handle PCI0 interrupt
-ISR(PCINT0_vect)
+ISR(PCINT2_vect)
 {
     if (!((PIND >> PIND5) & 0x1)){
         button_toggled = 1;
