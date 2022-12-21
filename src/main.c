@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include "../lib/uart/uart.h"
 
-uint8_t volatile button_toggled;
+uint8_t volatile toggle_led;
 
 void printstate(void);
 
@@ -35,22 +35,33 @@ int main(void)
         PORTB |= (1 << PB5);
     }
 
-    // sets PCICR to enable pin change interrupt enable 2
-    PCICR = (1 << PCIE2);
 
     // sets PCMSK2 register to enable D5 (PCINT21) as PCIE2 pin
     PCMSK2 = (1 << PCINT21);
 
+
+    // interrupt (frequency) scheduler:
+    //      interrupt cleans timer/counter1 and deactivates itself
+    //      on clock/counter overflow ISR reactivates interrupts
+
+    // 16bit clock1 1/64 pre-scalar 
+    TCCR1B =  1 << CS11 | 1 << CS10;
+    // clock counter max =~ 500ms (f_clk*scalar/2^17)
+
+    // clear OC0A on interrupt
+    TCCR1A = (1 << COM1A0) | (1 << COM1A1); 
+    // T/C0 overflow A interrupt
+    TIMSK1 = (1 << TOIE0);
+
+    
     // turns on interrupts
     sei();
 
     while (1)
     {
-        if (button_toggled)
+        if (toggle_led)
         {
-            //cli();
-
-            //toggles pin b 5
+            //toggle pin B5
             PORTB ^= (1 << PB5);
 
             //save state on eeprom
@@ -58,7 +69,7 @@ int main(void)
 
             printstate();
 
-            button_toggled = 0;
+            toggle_led = 0;
         }
 
         //checks for serial receiver buffer
@@ -68,12 +79,7 @@ int main(void)
             putchar('\n');
             putchar('\r');
 
-            //toggles pin b 5
-            PORTB ^= (1 << PB5);
-
-            eeprom_update_byte(0, ((PORTB >> PB5) & 0x1));
-
-            printstate();
+            toggle_led = 1;
 
             while (UCSR0A & (1<<RXC0)) serial_data = UDR0;
             serial_data = 0;
@@ -96,9 +102,26 @@ void printstate(void)
 // handle PCI0 interrupt
 ISR(PCINT2_vect)
 {
+    // if D5 is LOW
     if (!((PIND >> PIND5) & 0x1)){
-        button_toggled = 1;
+        toggle_led = 1;
     }
+
+    // sets PCICR to disable PCIE2
+    PCICR &= ~(1 << PCIE2);
+
+    // resets scheduler period count
+    TCNT1H = 0;
+    TCNT1L = 0;
+}
+
+// handles timer/counter1 for strict interrupt scheduler period
+// by reactivating interrupts only after a certain period of 
+// their last activation
+ISR(TIMER1_OVF_vect)
+{
+    // sets PCICR to pin change interrupt enable 2
+    PCICR = (1 << PCIE2);
 }
 
 //ISR(USART_RX_vect)
