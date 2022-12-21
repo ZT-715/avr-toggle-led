@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 
 set(PROG_TYPE arduino)
-set(PORT /dev/ttyUSB1)
+set(PORT /dev/ttyUSB0)
 
 
 # Variables regarding the AVR chip
@@ -93,8 +93,8 @@ add_custom_target(eeprom      ${OBJCOPY} -j .eeprom --change-section-lma .eeprom
 add_custom_target(flash ${AVRDUDE} -c ${PROG_TYPE} -P ${PORT} -b ${BAUD} -p ${MCU} -U flash:w:${PROJECT_NAME}.hex DEPENDS hex)
 
 # Debug setup
-add_custom_target(virtualavr ${SIMAVR} -f "${PROJECT_NAME}.elf" --gdbserver -p 4242 --device atmega328 DEPENDS blink)
-add_custom_target(debug ${AVRGDB} "${PROJECT_NAME}.elf" -ex 'target remote localhost:4242' DEPENDS virtualavr)
+add_custom_target(virtualavr ${SIMAVR} -f "${PROJECT_NAME}.elf" --gdbserver -p 4242 --device atmega328 DEPENDS ${PROJECT_NAME})
+add_custom_target(virtualavr-debug ${AVRGDB} "${PROJECT_NAME}.elf" -ex 'target remote localhost:4242' ) 
 
 # Serial console setup
 add_custom_target(serial cu -l ${PORT} -s ${BAUD})
