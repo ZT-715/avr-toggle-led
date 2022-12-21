@@ -42,18 +42,32 @@ make flash
 
 Uses 8 bit of data, 1 stop bit and no parity bit and may be used by any serial console program just by setting the arduino port and the baud rate, ex.:
 
-```shell
+```
 screen /dev/ttyUSB0 57600
 ```
 
 or:
 
-```shell
+```
 cu -l /dev/ttyUSB0 -s 57600
 ```
 
 or using CMAKE:
 
-```shell
+```
 make serial
 ```
+
+### Debug
+
+To simulate and debug part of the functionalities throug sumulavr with avr-gdb:
+
+``` 
+make virtualavr
+```
+
+Then on a different terminal, its possible to start gdb with:
+```
+make virtualavr-debug
+```
+It is also possible to do hardware debbugind with [debug-wire AVR protocol through another Arduino board](https://sites.google.com/site/wayneholder/debugwire).
